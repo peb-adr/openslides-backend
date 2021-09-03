@@ -5,6 +5,9 @@ from importlib import import_module
 from typing import List, Type
 
 from datastore.migrations import BaseMigration, setup
+from datastore.shared.di import injector
+from datastore.shared.postgresql_backend import ConnectionHandler
+from datastore.shared.services import ReadDatabase
 
 
 def get_parser() -> ArgumentParser:
@@ -49,6 +52,12 @@ def get_parser() -> ArgumentParser:
         add_help=False,
         description="The stats parser",
         help="Print some stats about the current migration state.",
+    )
+    subparsers.add_parser(
+        "action",
+        add_help=False,
+        description="The action parser",
+        help="Print if any action need to be taken based on the migration index.",
     )
 
     return parent_parser
@@ -107,6 +116,15 @@ def main() -> int:
         handler.delete_collectionfield_aux_tables()
     elif args.command == "stats":
         handler.print_stats()
+    elif args.command == "action":
+        try:
+            assert_migration_index()
+        except MissingMigrations as e:
+            print(f"ACTION 1 - {str(e)}")
+        except MisconfiguredMigrations as e:
+            print(f"ACTION 2 - {str(e)}")
+        else:
+            print(f"ACTION 0 - No Migrations needed")
     elif not args.command:
         print("No command provided.\n")
         parser.print_help()
@@ -117,6 +135,44 @@ def main() -> int:
         return 1
 
     return 0
+
+
+class MissingMigrations(Exception):
+    pass
+
+
+class MisconfiguredMigrations(Exception):
+    pass
+
+
+def assert_migration_index() -> None:
+    connection = injector.get(ConnectionHandler)
+    with connection.get_connection_context():
+        if connection.query_single_value("select count(*) from positions", []) == 0:
+            return  # Datastore is empty; nothing to check.
+
+    migration_classes = load_migrations()
+
+    backend_migration_index = 1
+    for migration_class in migration_classes:
+        backend_migration_index = max(
+            backend_migration_index, migration_class().target_migration_index
+        )
+
+    # Get the migration index from the datastore:
+    read_db = injector.get(ReadDatabase)
+    with read_db.get_context():
+        datastore_migration_index = max(1, read_db.get_current_migration_index())
+
+    if backend_migration_index > datastore_migration_index:
+        raise MissingMigrations(
+            f"Missing {backend_migration_index-datastore_migration_index} migrations to apply."
+        )
+
+    if backend_migration_index < datastore_migration_index:
+        raise MisconfiguredMigrations(
+            f"Migration indices do not match: Datastore has {datastore_migration_index} and the backend has {backend_migration_index}"
+        )
 
 
 if __name__ == "__main__":
