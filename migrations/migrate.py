@@ -54,10 +54,10 @@ def get_parser() -> ArgumentParser:
         help="Print some stats about the current migration state.",
     )
     subparsers.add_parser(
-        "action",
+        "status",
         add_help=False,
-        description="The action parser",
-        help="Print if any action need to be taken based on the migration index.",
+        description="The status parser",
+        help="Check the state of migrations for the current version.",
     )
 
     return parent_parser
@@ -116,17 +116,17 @@ def main() -> int:
         handler.delete_collectionfield_aux_tables()
     elif args.command == "stats":
         handler.print_stats()
-    elif args.command == "action":
+    elif args.command == "status":
         try:
             assert_migration_index()
         except MissingMigrations as e:
-            print(f"ACTION 1 - {str(e)}")
+            print(f"STATUS 1 - {str(e)}")
             return 1
         except MisconfiguredMigrations as e:
-            print(f"ACTION 2 - {str(e)}")
+            print(f"STATUS 2 - {str(e)}")
             return 2
         else:
-            print(f"ACTION 0 - No Migrations needed")
+            print(f"STATUS 0 - No Migrations needed")
             return 0
     elif not args.command:
         print("No command provided.\n")
