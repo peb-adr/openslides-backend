@@ -121,10 +121,13 @@ def main() -> int:
             assert_migration_index()
         except MissingMigrations as e:
             print(f"ACTION 1 - {str(e)}")
+            return 1
         except MisconfiguredMigrations as e:
             print(f"ACTION 2 - {str(e)}")
+            return 2
         else:
             print(f"ACTION 0 - No Migrations needed")
+            return 0
     elif not args.command:
         print("No command provided.\n")
         parser.print_help()
