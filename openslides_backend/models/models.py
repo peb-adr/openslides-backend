@@ -3,7 +3,7 @@
 from openslides_backend.models import fields
 from openslides_backend.models.base import Model
 
-MODELS_YML_CHECKSUM = "dea25af9a336309f96f7ccb9eca61cb9"
+MODELS_YML_CHECKSUM = "2cfd63e78758058bb9b19644c8110b99"
 
 
 class Organization(Model):
@@ -42,7 +42,7 @@ class Organization(Model):
     saml_attr_mapping = fields.JSONField()
     saml_metadata_idp = fields.TextField()
     saml_metadata_sp = fields.TextField()
-    saml_private_key = fields.CharField()
+    saml_private_key = fields.TextField()
     committee_ids = fields.RelationListField(to={"committee": "organization_id"})
     active_meeting_ids = fields.RelationListField(
         to={"meeting": "is_active_in_organization_id"}
