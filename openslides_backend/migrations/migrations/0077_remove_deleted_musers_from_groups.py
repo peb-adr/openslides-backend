@@ -19,7 +19,7 @@ class Migration(BaseModelMigration):
         events: list[BaseRequestEvent] = []
         for id_, data in all_existing_groups.items():
             if remove_meeting_user_ids := set(
-                data.get("meeting_user_ids", [])
+                data.get("meeting_user_ids", []) or []
             ).difference(all_existing_meeting_user_ids):
                 print(f"update fqid={ fqid_from_collection_and_id('group', id_) } remove={ list(remove_meeting_user_ids) }")
                 events.append(
