@@ -579,13 +579,14 @@ class MigrationHandler(BaseHandler):
             ).items()
             if state != MigrationState.FINALIZED
         ]
-        self.cursor.execute(
-            sql.SQL("DELETE from version WHERE migration_index = ANY(")
-            + sql.Placeholder()
+        query = sql.SQL("DELETE from version WHERE migration_index = ANY(") \
+            + sql.Placeholder() \
             + sql.SQL(");"),
+        self.cursor.execute(
+            query,
             (to_delete_indices,),
         )
-        print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
+        print(self.cursor.mogrify(query, (to_delete_indices,)))
 
         self.unset_tables_read_only()
 

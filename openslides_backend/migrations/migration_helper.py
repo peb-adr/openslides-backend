@@ -239,7 +239,7 @@ class MigrationHelper:
             updates=sql.SQL(", ").join(updates),
         )
         curs.execute(statement, tuple(params.values()))
-        print(curs.mogrify(curs._query.query, curs._query.params))
+        print(curs.mogrify(statement, tuple(params.values())))
         curs.connection.commit()
 
     @staticmethod
