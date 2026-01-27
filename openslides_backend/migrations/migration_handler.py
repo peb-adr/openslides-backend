@@ -44,8 +44,9 @@ class MigrationHandler(BaseHandler):
                 table_m=table_m, table_t=table_t
             )
         )
-        print((self.cursor._query.query or b"").decode("utf-8"))
-        print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        #print((self.cursor._query.query or b"").decode("utf-8"))
+        #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
 
         # TODO we might need finalization tables for future migrations to have active triggers on the table.
 
@@ -72,8 +73,9 @@ class MigrationHandler(BaseHandler):
                 ),
             )
         )
-        print((self.cursor._query.query or b"").decode("utf-8"))
-        print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        #print((self.cursor._query.query or b"").decode("utf-8"))
+        #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
 
     def setup_migration_relations(self) -> None:
         """Sets the tables and views used within the migration and copies their data."""
@@ -158,8 +160,9 @@ class MigrationHandler(BaseHandler):
                         ),
                     )
                 )
-                print((self.cursor._query.query or b"").decode("utf-8"))
-                print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                #print((self.cursor._query.query or b"").decode("utf-8"))
+                #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
 
         def replace_suffix(m: re.Match) -> str:
             base = m.group(1)
@@ -188,8 +191,9 @@ class MigrationHandler(BaseHandler):
                     viewdef=sql.SQL(viewdef),
                 )
             )
-            print((self.cursor._query.query or b"").decode("utf-8"))
-            print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            #print((self.cursor._query.query or b"").decode("utf-8"))
+            #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
             # TODO rereference all models pointing to or pointed from this collection including im tables
             # (not origin tables)
             # shouldn't that be done during finalize?
@@ -241,8 +245,9 @@ class MigrationHandler(BaseHandler):
                 replaced_blocks.append(view_re.sub(add_suffix, modified_block))
         sql_text = "".join(replaced_blocks)
         self.cursor.execute(sql_text)
-        print((self.cursor._query.query or b"").decode("utf-8"))
-        print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        #print((self.cursor._query.query or b"").decode("utf-8"))
+        #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
 
     def update_sequence(self, name: str, maximum: int) -> None:
         self.cursor.execute(
@@ -251,8 +256,9 @@ class MigrationHandler(BaseHandler):
                 maximum=maximum,
             )
         )
-        print((self.cursor._query.query or b"").decode("utf-8"))
-        print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        #print((self.cursor._query.query or b"").decode("utf-8"))
+        #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
 
     def update_sequences(self) -> None:
         """
@@ -288,8 +294,9 @@ class MigrationHandler(BaseHandler):
                     self.cursor.execute(
                         sql.SQL(f"CREATE SEQUENCE IF NOT EXISTS {seq_name};")
                     )
-                    print((self.cursor._query.query or b"").decode("utf-8"))
-                    print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                    #print((self.cursor._query.query or b"").decode("utf-8"))
+                    #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                    print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
                     self.update_sequence(seq_name, result["max"])
 
     def execute_migrations(self) -> None:
@@ -390,8 +397,9 @@ class MigrationHandler(BaseHandler):
                         table=sql.Identifier(table),
                     )
                 )
-                print((self.cursor._query.query or b"").decode("utf-8"))
-                print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                #print((self.cursor._query.query or b"").decode("utf-8"))
+                #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
 
     def unset_tables_read_only(self) -> None:
         """Sets all origin_collections tables to readable by dropping the read-only trigger."""
@@ -401,8 +409,9 @@ class MigrationHandler(BaseHandler):
                     trigger_name=sql.SQL(f"tr_lock_{table}")
                 )
             )
-            print((self.cursor._query.query or b"").decode("utf-8"))
-            print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            #print((self.cursor._query.query or b"").decode("utf-8"))
+            #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
         # Support reset on initial migration.
         if MigrationHelper.get_database_migration_index(self.cursor) < 100:
             for table in OLD_TABLES:
@@ -411,8 +420,9 @@ class MigrationHandler(BaseHandler):
                         table=sql.SQL(table)
                     )
                 )
-                print((self.cursor._query.query or b"").decode("utf-8"))
-                print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                #print((self.cursor._query.query or b"").decode("utf-8"))
+                #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
 
     @classmethod
     def close_migrate_thread_stream(cls) -> str:
@@ -470,31 +480,35 @@ class MigrationHandler(BaseHandler):
                     real_name=sql.Identifier(collection + "_t")
                 )
             )
-            print((self.cursor._query.query or b"").decode("utf-8"))
-            print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            #print((self.cursor._query.query or b"").decode("utf-8"))
+            #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
             self.cursor.execute(
                 sql.SQL("ALTER TABLE {migration_name} RENAME TO {real_name}").format(
                     real_name=sql.Identifier(collection + "_t"),
                     migration_name=sql.Identifier(migration_names["table"]),
                 )
             )
-            print((self.cursor._query.query or b"").decode("utf-8"))
-            print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            #print((self.cursor._query.query or b"").decode("utf-8"))
+            #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
             self.cursor.execute(
                 sql.SQL(
                     "ALTER SEQUENCE {collection}_m_id_seq RENAME TO {collection}_t_id_seq;"
                 ).format(collection=sql.SQL(collection))
             )
-            print((self.cursor._query.query or b"").decode("utf-8"))
-            print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            #print((self.cursor._query.query or b"").decode("utf-8"))
+            #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
             # Will be recreated for origin table below.
             self.cursor.execute(
                 sql.SQL("DROP VIEW {migration_name};").format(
                     migration_name=sql.Identifier(migration_names["view"]),
                 )
             )
-            print((self.cursor._query.query or b"").decode("utf-8"))
-            print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            #print((self.cursor._query.query or b"").decode("utf-8"))
+            #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
             im_tables.update(migration_names["im_tables"])
 
         # RENAME intermediate tables
@@ -504,8 +518,9 @@ class MigrationHandler(BaseHandler):
                     real_name=sql.Identifier(table_name)
                 )
             )
-            print((self.cursor._query.query or b"").decode("utf-8"))
-            print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            #print((self.cursor._query.query or b"").decode("utf-8"))
+            #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
             self.cursor.execute(
                 sql.SQL("ALTER TABLE {migration_name} RENAME TO {real_name}").format(
                     real_name=sql.Identifier(table_name),
@@ -514,8 +529,9 @@ class MigrationHandler(BaseHandler):
                     ),
                 )
             )
-            print((self.cursor._query.query or b"").decode("utf-8"))
-            print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            #print((self.cursor._query.query or b"").decode("utf-8"))
+            #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
 
         # RECREATE triggers
         if HelperGetNames.trigger_unique_list:
@@ -566,11 +582,13 @@ class MigrationHandler(BaseHandler):
                         table=sql.Identifier(trigger_dict["table_name"]),
                     )
                 )
-                print((self.cursor._query.query or b"").decode("utf-8"))
-                print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                #print((self.cursor._query.query or b"").decode("utf-8"))
+                #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
         self.cursor.execute(sql_text)
-        print((self.cursor._query.query or b"").decode("utf-8"))
-        print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        #print((self.cursor._query.query or b"").decode("utf-8"))
+        #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
 
         self.update_sequences()
 
@@ -603,8 +621,9 @@ class MigrationHandler(BaseHandler):
             + sql.SQL(");"),
             (to_delete_indices,),
         )
-        print((self.cursor._query.query or b"").decode("utf-8"))
-        print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        #print((self.cursor._query.query or b"").decode("utf-8"))
+        #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+        print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
 
         self.unset_tables_read_only()
 
@@ -629,13 +648,16 @@ class MigrationHandler(BaseHandler):
         if MigrationHelper.get_database_migration_index(self.cursor) < 100:
             for collection in replace_tables:
                 self.cursor.execute(f"DROP TABLE {collection}_t;")
-                print((self.cursor._query.query or b"").decode("utf-8"))
-                print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                #print((self.cursor._query.query or b"").decode("utf-8"))
+                #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
         if any(mi > 100 for mi in indices):
             for table_view in replace_tables.values():
                 self.cursor.execute(f"DROP TABLE {table_view['table']};")
-                print((self.cursor._query.query or b"").decode("utf-8"))
-                print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                #print((self.cursor._query.query or b"").decode("utf-8"))
+                #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
                 self.cursor.execute(f"DROP VIEW {table_view['view']};")
-                print((self.cursor._query.query or b"").decode("utf-8"))
-                print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                #print((self.cursor._query.query or b"").decode("utf-8"))
+                #print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+                print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))

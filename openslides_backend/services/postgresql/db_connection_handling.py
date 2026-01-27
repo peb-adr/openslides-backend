@@ -6,7 +6,7 @@ from functools import wraps
 from time import sleep
 from typing import Any
 
-from psycopg import Connection, IsolationLevel, OperationalError, connect, rows
+from psycopg import ClientCursor, Connection, IsolationLevel, OperationalError, connect, rows
 from psycopg_pool import ConnectionPool
 
 from openslides_backend.shared.env import Environment
@@ -88,9 +88,10 @@ def get_current_os_conn_pool() -> ConnectionPool[Connection[rows.DictRow]]:
 
 
 def get_new_os_conn() -> ConnectionContext:
-    os_conn_pool = get_current_os_conn_pool()
-    os_conn_pool.check()
-    return ConnectionContext(os_conn_pool.connection())
+    #os_conn_pool = get_current_os_conn_pool()
+    #os_conn_pool.check()
+    #return ConnectionContext(os_conn_pool.connection())
+    return ConnectionContext(get_unpooled_db_connection(env.DATABASE_NAME))
 
 
 def get_unpooled_db_connection(
@@ -104,6 +105,7 @@ def get_unpooled_db_connection(
             f"host='{env.DATABASE_HOST}' port='{env.DATABASE_PORT}' dbname='{db_name}' user='{env.DATABASE_USER}' password='{env.PGPASSWORD}'",
             autocommit=autocommit,
             row_factory=row_factory,
+            cursor_factory=ClientCursor,
         )
         db_connection.isolation_level = IsolationLevel.SERIALIZABLE
     except OperationalError as e:

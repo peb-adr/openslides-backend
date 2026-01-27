@@ -239,8 +239,9 @@ class MigrationHelper:
             updates=sql.SQL(", ").join(updates),
         )
         curs.execute(statement, tuple(params.values()))
-        print((curs._query.query or b"").decode("utf-8"))
-        print([ p.decode("utf-8") for p in curs._query.params or [] ])
+        #print((curs._query.query or b"").decode("utf-8"))
+        #print([ p.decode("utf-8") for p in curs._query.params or [] ])
+        print(curs.mogrify(curs._query.query, curs._query.params))
         curs.connection.commit()
 
     @staticmethod

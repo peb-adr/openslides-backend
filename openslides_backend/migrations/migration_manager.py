@@ -111,6 +111,7 @@ class MigrationManager:
             ).fetchone()
             print((self.cursor._query.query or b"").decode("utf-8"))
             print([ p.decode("utf-8") for p in self.cursor._query.params or [] ])
+            print(self.cursor.mogrify(self.cursor._query.query, self.cursor._query.params))
             return (response or {}).get("count", 0)
 
         current_migration_index = MigrationHelper.get_database_migration_index(

@@ -353,8 +353,9 @@ def data_manipulation(curs: Cursor[DictRow]) -> None:
                 f"INSERT INTO {table_name} ({sql_fields}) VALUES ({sql_placeholder})",
                 sql_values,
             )
-            print((curs._query.query or b"").decode("utf-8"))
-            print([ p.decode("utf-8") for p in curs._query.params or [] ])
+            #print((curs._query.query or b"").decode("utf-8"))
+            #print([ p.decode("utf-8") for p in curs._query.params or [] ])
+            print(curs.mogrify(curs._query.query, curs._query.params))
         # END LOOP data_rows
         MigrationHelper.write_line(
             f"{min(Sql_helper.offset, models_count)} of {models_count} models written to tables."
@@ -364,8 +365,9 @@ def data_manipulation(curs: Cursor[DictRow]) -> None:
     # 4) INSERT intermediate tables
     for command, values in insert_intermediate_t_commands:
         curs.execute(command, values)
-        print((curs._query.query or b"").decode("utf-8"))
-        print([ p.decode("utf-8") for p in curs._query.params or [] ])
+        #print((curs._query.query or b"").decode("utf-8"))
+        #print([ p.decode("utf-8") for p in curs._query.params or [] ])
+        print(curs.mogrify(curs._query.query, curs._query.params))
 
     # clear replace tables as this migration writes the tables directly
     MigrationHelper.set_database_migration_info(
@@ -384,8 +386,9 @@ def cleanup(curs: Cursor[DictRow]) -> None:
     """
     for table_name in OLD_TABLES:
         curs.execute(f"DROP TABLE {table_name} CASCADE;")
-        print((curs._query.query or b"").decode("utf-8"))
-        print([ p.decode("utf-8") for p in curs._query.params or [] ])
+        #print((curs._query.query or b"").decode("utf-8"))
+        #print([ p.decode("utf-8") for p in curs._query.params or [] ])
+        print(curs.mogrify(curs._query.query, curs._query.params))
 
 
 
