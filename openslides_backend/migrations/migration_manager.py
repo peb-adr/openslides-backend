@@ -109,6 +109,7 @@ class MigrationManager:
             response = self.cursor.execute(
                 sql.SQL("SELECT COUNT(*) FROM ") + statement_part
             ).fetchone()
+            print("EXEC: " + self.cursor._query.query.decode("utf-8") + " [" + (self.cursor._query.params or b"").decode("utf-8") + "]")
             return (response or {}).get("count", 0)
 
         current_migration_index = MigrationHelper.get_database_migration_index(
