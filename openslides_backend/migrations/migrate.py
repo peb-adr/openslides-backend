@@ -47,6 +47,12 @@ def get_parser() -> ArgumentParser:
         description="The stats parser",
         help="Print some stats about the current migration state.",
     )
+    subparsers.add_parser(
+        "progress",
+        add_help=False,
+        description="The progress parser",
+        help="Print the progress of the currently running migration.",
+    )
     return parent_parser
 
 
