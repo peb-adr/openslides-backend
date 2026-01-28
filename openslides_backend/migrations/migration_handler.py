@@ -332,11 +332,26 @@ class MigrationHandler(BaseHandler):
                         minimum_required_index["min"],
                         MigrationState.MIGRATION_RUNNING,
                     )
+                print()
+                print('INFO: write_line(started)')
+                print()
                 MigrationHelper.write_line("started")
+                print()
+                print('INFO: set_public_tables_read_only')
+                print()
                 self.set_public_tables_read_only()
+                print()
+                print('INFO: setup_migration_relations')
+                print()
                 self.setup_migration_relations()
+                print()
+                print('INFO: execute_migrations')
+                print()
                 self.execute_migrations()
                 MigrationHelper.migrate_thread_stream_can_be_closed = True
+                print()
+                print('INFO: write_line(finished)')
+                print()
                 MigrationHelper.write_line("finished")
             case MigrationState.FINALIZATION_REQUIRED:
                 self.logger.info("Done. Finalizing is still needed.")
@@ -438,6 +453,9 @@ class MigrationHandler(BaseHandler):
                     f"State is: {state} Finalization not possible if it's not required."
                 )
 
+        print()
+        print('INFO: write_line(finalization started)')
+        print()
         MigrationHelper.write_line("finalization started")
         for index, migration in MigrationHelper.migrations.items():
             module_name = migration
@@ -558,6 +576,9 @@ class MigrationHandler(BaseHandler):
 
         self.update_sequences()
 
+        print()
+        print('INFO: write_line(finalization finished)')
+        print()
         MigrationHelper.write_line("finalization finished")
         for mi in relevant_mis:
             MigrationHelper.set_database_migration_info(
