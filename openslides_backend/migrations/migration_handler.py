@@ -194,52 +194,52 @@ class MigrationHandler(BaseHandler):
 
         # RECREATE some relevant triggers
         # May be error prone due to changing constraints
-        if HelperGetNames.trigger_unique_list:
-            HelperGetNames.trigger_unique_list = []
-        (
-            pre_code,
-            table_name_code,
-            view_name_code,
-            alter_table_code,
-            final_info_code,
-            missing_handled_attributes,
-            im_table_code,
-            create_trigger_partitioned_sequences_code,
-            create_trigger_1_1_relation_not_null_code,
-            create_trigger_1_n_relation_not_null_code,
-            create_trigger_n_m_relation_not_null_code,
-            create_trigger_unique_ids_pair_code,
-            create_trigger_notify_code,
-            errors,
-        ) = GenerateCodeBlocks.generate_the_code()
-        sql_text = (
-            create_trigger_1_1_relation_not_null_code
-            + create_trigger_1_n_relation_not_null_code
-            + create_trigger_n_m_relation_not_null_code
-            + create_trigger_unique_ids_pair_code
-        )
-        # replace with the migration names before execute
-        replaced_blocks = []
-        trigger_re = re.compile(
-            r"(CREATE\s+(?:CONSTRAINT\s+)?TRIGGER\b.*?;)", re.IGNORECASE | re.DOTALL
-        )
-        view_re = re.compile(r"\B'([A-Za-z0-9_.]+)'\B")
+        #if HelperGetNames.trigger_unique_list:
+        #    HelperGetNames.trigger_unique_list = []
+        #(
+        #    pre_code,
+        #    table_name_code,
+        #    view_name_code,
+        #    alter_table_code,
+        #    final_info_code,
+        #    missing_handled_attributes,
+        #    im_table_code,
+        #    create_trigger_partitioned_sequences_code,
+        #    create_trigger_1_1_relation_not_null_code,
+        #    create_trigger_1_n_relation_not_null_code,
+        #    create_trigger_n_m_relation_not_null_code,
+        #    create_trigger_unique_ids_pair_code,
+        #    create_trigger_notify_code,
+        #    errors,
+        #) = GenerateCodeBlocks.generate_the_code()
+        #sql_text = (
+        #    create_trigger_1_1_relation_not_null_code
+        #    + create_trigger_1_n_relation_not_null_code
+        #    + create_trigger_n_m_relation_not_null_code
+        #    + create_trigger_unique_ids_pair_code
+        #)
+        ## replace with the migration names before execute
+        #replaced_blocks = []
+        #trigger_re = re.compile(
+        #    r"(CREATE\s+(?:CONSTRAINT\s+)?TRIGGER\b.*?;)", re.IGNORECASE | re.DOTALL
+        #)
+        #view_re = re.compile(r"\B'([A-Za-z0-9_.]+)'\B")
 
-        def add_suffix(m: re.Match) -> str:
-            base = m.group(1)
-            if base in unified_replace_tables:
-                return f"'{base}vm'"
-            else:
-                return f"'{base}'"
+        #def add_suffix(m: re.Match) -> str:
+        #    base = m.group(1)
+        #    if base in unified_replace_tables:
+        #        return f"'{base}vm'"
+        #    else:
+        #        return f"'{base}'"
 
-        for match in trigger_re.finditer(sql_text):
-            block = match.group(0)
-            if table_re.search(block):
-                modified_block = table_re.sub(replace_suffix, block)
-                replaced_blocks.append(view_re.sub(add_suffix, modified_block))
-        sql_text = "".join(replaced_blocks)
-        self.cursor.execute(sql_text)
-        print((self.cursor._query.query or b"").decode("utf-8"))
+        #for match in trigger_re.finditer(sql_text):
+        #    block = match.group(0)
+        #    if table_re.search(block):
+        #        modified_block = table_re.sub(replace_suffix, block)
+        #        replaced_blocks.append(view_re.sub(add_suffix, modified_block))
+        #sql_text = "".join(replaced_blocks)
+        #self.cursor.execute(sql_text)
+        #print((self.cursor._query.query or b"").decode("utf-8"))
 
     def update_sequence(self, name: str, maximum: int) -> None:
         self.cursor.execute(
