@@ -39,9 +39,14 @@ class MigrationHandler(BaseHandler):
         """Copies the table with its definition and rows. Does not copy trigger."""
         table_m = sql.Identifier(HelperGetNames.get_table_name(table_name, True))
         table_t = sql.Identifier(table_name)
+        including  =  "INCLUDING COMMENTS"
+        including += " INCLUDING DEFAULTS"
+        including += " INCLUDING GENERATED"
+        including += " INCLUDING IDENTITY"
         self.cursor.execute(
             # Don't include ALL (including constraints)
-            sql.SQL("CREATE TABLE {table_m} (LIKE {table_t});").format(
+            # But we do need to include some ...
+            sql.SQL("CREATE TABLE {table_m} (LIKE {table_t} " + including + ");").format(
                 table_m=table_m, table_t=table_t
             )
         )
