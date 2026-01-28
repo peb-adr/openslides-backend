@@ -40,7 +40,8 @@ class MigrationHandler(BaseHandler):
         table_m = sql.Identifier(HelperGetNames.get_table_name(table_name, True))
         table_t = sql.Identifier(table_name)
         self.cursor.execute(
-            sql.SQL("CREATE TABLE {table_m} (LIKE {table_t} INCLUDING ALL);").format(
+            # Don't include ALL (including constraints)
+            sql.SQL("CREATE TABLE {table_m} (LIKE {table_t});").format(
                 table_m=table_m, table_t=table_t
             )
         )
@@ -129,34 +130,35 @@ class MigrationHandler(BaseHandler):
                 # to prevent running into those constraints (later not) being violated.
                 # origin if not in replace tables
                 # else migration
-                self.cursor.execute(
-                    # sql.SQL(
-                    #     "ALTER TABLE {t_name} DROP CONSTRAINT {c_name};"
-                    # ).format(
-                    #     t_name=table_name,
-                    #     c_name=sql.SQL(result["constraint_name"])
-                    sql.SQL(
-                        "ALTER TABLE {o_table} ADD CONSTRAINT {c_name} FOREIGN KEY ({o_column}) REFERENCES {f_table}({f_column}) ON DELETE {on_delete}{deferable}{initially_deferred};"
-                    ).format(
-                        o_table=sql.Identifier(
-                            HelperGetNames.get_table_name(table_name, migration=True)
-                        ),
-                        f_table=sql.Identifier(f_table_name),
-                        c_name=sql.SQL(result["constraint_name"].replace("_t_", "_m_")),
-                        o_column=sql.SQL(result["column_name"]),
-                        f_column=sql.SQL(result["foreign_column_name"]),
-                        on_delete=sql.SQL(result["delete_rule"]),
-                        deferable=sql.SQL(
-                            " DEFERRABLE" if result["is_deferrable"] == "YES" else ""
-                        ),
-                        initially_deferred=sql.SQL(
-                            " INITIALLY DEFERRED"
-                            if result["initially_deferred"] == "YES"
-                            else ""
-                        ),
-                    )
-                )
-                print((self.cursor._query.query or b"").decode("utf-8"))
+                #self.cursor.execute(
+                #    # sql.SQL(
+                #    #     "ALTER TABLE {t_name} DROP CONSTRAINT {c_name};"
+                #    # ).format(
+                #    #     t_name=table_name,
+                #    #     c_name=sql.SQL(result["constraint_name"])
+                #    # Omit to not have contraints
+                #    #sql.SQL(
+                #    #    "ALTER TABLE {o_table} ADD CONSTRAINT {c_name} FOREIGN KEY ({o_column}) REFERENCES {f_table}({f_column}) ON DELETE {on_delete}{deferable}{initially_deferred};"
+                #    #).format(
+                #    #    o_table=sql.Identifier(
+                #    #        HelperGetNames.get_table_name(table_name, migration=True)
+                #    #    ),
+                #    #    f_table=sql.Identifier(f_table_name),
+                #    #    c_name=sql.SQL(result["constraint_name"].replace("_t_", "_m_")),
+                #    #    o_column=sql.SQL(result["column_name"]),
+                #    #    f_column=sql.SQL(result["foreign_column_name"]),
+                #    #    on_delete=sql.SQL(result["delete_rule"]),
+                #    #    deferable=sql.SQL(
+                #    #        " DEFERRABLE" if result["is_deferrable"] == "YES" else ""
+                #    #    ),
+                #    #    initially_deferred=sql.SQL(
+                #    #        " INITIALLY DEFERRED"
+                #    #        if result["initially_deferred"] == "YES"
+                #    #        else ""
+                #    #    ),
+                #    #)
+                #)
+                #print((self.cursor._query.query or b"").decode("utf-8"))
 
         def replace_suffix(m: re.Match) -> str:
             base = m.group(1)
