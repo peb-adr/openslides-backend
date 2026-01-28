@@ -350,11 +350,11 @@ def data_manipulation(curs: Cursor[DictRow]) -> None:
                         sql_values.append(value)
             # END LOOP data.keys()
             query = f"INSERT INTO {table_name} ({sql_fields}) VALUES ({sql_placeholder})"
+            print(curs.mogrify(query, sql_values))
             curs.execute(
                 query,
                 sql_values,
             )
-            print(curs.mogrify(query, sql_values))
         # END LOOP data_rows
         MigrationHelper.write_line(
             f"{min(Sql_helper.offset, models_count)} of {models_count} models written to tables."
@@ -363,8 +363,8 @@ def data_manipulation(curs: Cursor[DictRow]) -> None:
 
     # 4) INSERT intermediate tables
     for command, values in insert_intermediate_t_commands:
-        curs.execute(command, values)
         print(curs.mogrify(command, values))
+        curs.execute(command, values)
 
     # clear replace tables as this migration writes the tables directly
     MigrationHelper.set_database_migration_info(

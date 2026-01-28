@@ -605,11 +605,11 @@ class MigrationHandler(BaseHandler):
         query = sql.SQL("DELETE from version WHERE migration_index = ANY(") \
             + sql.Placeholder() \
             + sql.SQL(");"),
+        print(self.cursor.mogrify(query, (to_delete_indices,)))
         self.cursor.execute(
             query,
             (to_delete_indices,),
         )
-        print(self.cursor.mogrify(query, (to_delete_indices,)))
 
         self.unset_tables_read_only()
 
