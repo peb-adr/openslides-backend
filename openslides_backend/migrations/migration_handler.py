@@ -303,6 +303,9 @@ class MigrationHandler(BaseHandler):
             module_name = migration
             migration_module = import_module(f"{MODULE_PATH}{module_name}")
             self.logger.info("Executing migration: " + module_name)
+            print()
+            print("INFO: logger.info(Executing migration: + module_name )")
+            print()
             MigrationHelper.set_database_migration_info(
                 self.cursor, index, MigrationState.MIGRATION_RUNNING
             )
@@ -322,6 +325,9 @@ class MigrationHandler(BaseHandler):
         Starts the migration process.
         """
         self.logger.info("Running migrations.")
+        print()
+        print("INFO: logger.info(Running migrations.)")
+        print()
         state = MigrationHelper.get_migration_state(self.cursor)
         match state:
             case MigrationState.MIGRATION_REQUIRED:
@@ -360,10 +366,19 @@ class MigrationHandler(BaseHandler):
                 MigrationHelper.write_line("finished")
             case MigrationState.FINALIZATION_REQUIRED:
                 self.logger.info("Done. Finalizing is still needed.")
+                print()
+                print("INFO: logger.info(Done. Finalizing is still needed.)")
+                print()
             case MigrationState.FINALIZED:
                 self.logger.info("No migration needed.")
+                print()
+                print("INFO: logger.info(No migration needed.)")
+                print()
             case MigrationState.MIGRATION_RUNNING:
                 self.logger.info("There is already a migration running.")
+                print()
+                print("INFO: logger.info(There is already a migration running.)")
+                print()
             case _:
                 raise MigrationException(
                     f"{state} not allowed when executing migrate command."
@@ -453,6 +468,9 @@ class MigrationHandler(BaseHandler):
                 return self.finalize()
             case MigrationState.FINALIZATION_REQUIRED:
                 self.logger.info("Finalize migrations.")
+                print()
+                print("INFO: logger.info(Finalize migrations.)")
+                print()
             case _:
                 raise MigrationException(
                     f"State is: {state} Finalization not possible if it's not required."
@@ -590,12 +608,18 @@ class MigrationHandler(BaseHandler):
                 self.cursor, mi, MigrationState.FINALIZED
             )
         self.logger.info(f"Set the new migration index to {max(relevant_mis)}...")
+        print()
+        print(f"INFO: logger.info(Set the new migration index to {max(relevant_mis)}...)")
+        print()
 
     def reset(self) -> None:
         """
         Resets the migrations currently in progress and restores the state before the migration.
         """
         self.logger.info("Reset migrations.")
+        print()
+        print("INFO: logger.info(Reset migrations.)")
+        print()
         self.close_migrate_thread_stream()
         self._clean_migration_data()
         indices = MigrationHelper.get_indices_from_database(self.cursor)
@@ -623,6 +647,9 @@ class MigrationHandler(BaseHandler):
         Removes migration tables and views
         """
         self.logger.info("Clean up migration data...")
+        print()
+        print("INFO: logger.info(Clean up migration data...)")
+        print()
         assert self.cursor, "Handlers cursor must be initialized."
         indices = MigrationHelper.get_indices_from_database(self.cursor)
         state_per_idx = MigrationHelper.get_database_migration_states(

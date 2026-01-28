@@ -159,6 +159,9 @@ class MigrationManager:
             )
         if self.verbose:
             self.logger.info(f"Current migration index: {database_m_idx}")
+            print()
+            print(f"INFO: logger.info(Current migration index: {database_m_idx})")
+            print()
 
     def handle_request(self, payload: dict[str, Any]) -> dict[str, Any]:
         """
@@ -168,6 +171,9 @@ class MigrationManager:
         if not (command := payload.get("cmd")):
             raise View400Exception("No command provided")
         self.logger.info(f"Migration command: {command}")
+        print()
+        print(f"INFO: logger.info(Migration command: {command})")
+        print()
         with get_new_os_conn() as conn:
             conn.transaction()
             with conn.cursor() as curs:
@@ -243,6 +249,9 @@ class MigrationManager:
         except Exception as e:
             MigrationHelper.migrate_thread_exception = e
             self.logger.exception(e)
+            print()
+            print(f"INFO: logger.exception(e)")
+            print()
             # TODO catch this on a lower level and set it for specific faulty migration index
             with get_new_os_conn() as conn:
                 with conn.cursor() as curs:
